@@ -1,224 +1,140 @@
 <!DOCTYPE html>
-<html lang="{{ current_lang }}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Health Dashboard | Intelligence for Growth</title>
-    <!-- Tailwind CSS for modern styling -->
+    <title>BizHealth | Smart Business Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
-        
-        body {
-            /* Add Assamese font fallback */
-            font-family: 'Inter', 'Hind Siliguri', sans-serif;
-            background-color: #0f172a; /* Base slate-900 */
-            overflow-x: hidden;
-        }
-
-        /* Ambient glowing background effects */
-        .bg-glow-1 {
-            position: fixed;
-            top: -20%;
-            left: -10%;
-            width: 70vw;
-            height: 70vw;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        .bg-glow-2 {
-            position: fixed;
-            bottom: -20%;
-            right: -10%;
-            width: 60vw;
-            height: 60vw;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Enhanced Glassmorphism */
-        .glass {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .hero-gradient {
-            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Smooth Hover Lift with subtle glow */
-        .hover-lift {
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex;
-            flex-direction: column;
-            text-decoration: none;
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-6px);
-            background: rgba(30, 41, 59, 0.7);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        /* Entry Animations */
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        .delay-400 { animation-delay: 400ms; }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Custom styled select dropdown */
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem !important;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .hero-gradient { background: radial-gradient(circle at top right, #eef2ff 0%, #f8fafc 50%); }
     </style>
 </head>
-<body class="text-slate-200 min-h-screen flex flex-col relative">
-
-    <!-- Ambient Backgrounds -->
-    <div class="bg-glow-1"></div>
-    <div class="bg-glow-2"></div>
-
-    <!-- Navigation -->
-    <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto w-full fade-in-up">
-        <div class="flex items-center space-x-3">
-            <div class="bg-gradient-to-br from-sky-400 to-sky-600 p-2.5 rounded-xl shadow-lg shadow-sky-500/20">
-                <i data-lucide="activity" class="text-white w-6 h-6"></i>
+<body class="bg-slate-50 text-slate-900">
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
+                    <i data-lucide="activity" class="w-6 h-6"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-slate-900">BizHealth</span>
             </div>
-            <span class="text-2xl font-bold tracking-tight text-white">BizHealth</span>
-        </div>
-        
-        <div class="flex items-center space-x-6">
-            <div class="hidden md:flex space-x-6 text-sm font-medium mr-2">
-                <a href="/dashboard" class="text-slate-400 hover:text-white transition-colors">{{ t.get('nav_dashboard', 'Dashboard') }}</a>
-                <a href="/analytics" class="text-slate-400 hover:text-white transition-colors">{{ t.get('nav_analytics', 'Analytics') }}</a>
-                <a href="/trends-page" class="text-slate-400 hover:text-white transition-colors">{{ t.get('nav_trends', 'Trends') }}</a>
-                <a href="/health-page" class="text-slate-400 hover:text-white transition-colors">{{ t.get('nav_health', 'Health') }}</a>
-                <a href="/alerts-page" class="text-slate-400 hover:text-white transition-colors">{{ t.get('nav_alerts', 'Alerts') }}</a>
+            
+            <div class="flex items-center gap-6">
+                <!-- Language Switcher -->
+                <select onchange="window.location.href='/set_lang/' + this.value" class="bg-slate-100 text-slate-700 rounded-lg px-3 py-1.5 text-sm font-medium outline-none cursor-pointer hover:bg-slate-200 transition border border-slate-200">
+                    <option value="en" {% if current_lang == 'en' %}selected{% endif %}>English</option>
+                    <option value="as" {% if current_lang == 'as' %}selected{% endif %}>অসমীয়া</option>
+                </select>
+                <a href="/login" class="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">{{ t.nav_login }}</a>
+                <a href="/register" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-full transition-all shadow-lg shadow-indigo-100">
+                    {{ t.get('nav_register', 'Get Started Free') }}
+                </a>
             </div>
-
-            <!-- Language Switcher Dropdown with onChange event -->
-            <select onchange="window.location.href='/set_lang/' + this.value" class="glass text-slate-200 rounded-xl px-4 py-2 text-sm font-medium outline-none cursor-pointer hover:bg-slate-800/80 transition shadow-sm">
-                <option value="en" class="bg-slate-800" {% if current_lang == 'en' %}selected{% endif %}>English</option>
-                <option value="as" class="bg-slate-800" {% if current_lang == 'as' %}selected{% endif %}>অসমীয়া (Assamese)</option>
-            </select>
-
-            <!-- LOGIN BUTTON -->
-            <a href="/login" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-sky-500/20 ml-2">
-                <i data-lucide="log-in" class="w-4 h-4"></i>
-                {{ t.get('nav_login', 'Login') }}
-            </a>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="flex-grow flex flex-col items-center justify-center px-6 py-16 text-center z-10">
-        <div class="max-w-5xl w-full">
-            
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-8 tracking-tight text-white leading-[1.1] fade-in-up delay-100">
-                {{ t.get('hero_title_start', 'Know If Your') }} <br class="hidden md:block"/>
-                <span class="hero-gradient">{{ t.get('hero_highlight', 'Business Is Healthy') }}</span> <br class="hidden md:block"/>
-                {{ t.get('hero_title_end', 'in Minutes') }}
-            </h1>
-            
-            <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed fade-in-up delay-200 font-light">
-                {{ t.get('hero_desc', 'Small business owners like you track revenue and expenses every day, but often don’t know if their business is truly growing or at risk.') }}
-            </p>
-
-            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-24 fade-in-up delay-300">
-                <a href="/dashboard" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-white rounded-xl font-semibold text-lg transition-all shadow-[0_0_40px_-10px_rgba(56,189,248,0.5)] hover:shadow-[0_0_60px_-15px_rgba(56,189,248,0.7)] flex items-center justify-center group">
-                    {{ t.get('btn_enter', 'Start Analyzing My Business') }}
-                    <i data-lucide="arrow-right" class="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1"></i>
-                </a>
-                <a href="/demo" class="w-full sm:w-auto px-8 py-4 glass hover:bg-white/10 text-white rounded-xl font-semibold text-lg transition-all flex items-center justify-center">
-                    {{ t.get('btn_demo', 'View Demo') }}
-                </a>
+    <!-- Hero Section -->
+    <header class="pt-40 pb-20 hero-gradient overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold mb-6 tracking-wider uppercase">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                    </span>
+                    Trusted by 2,000+ Business Owners
+                </div>
+                <h1 class="text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.1] mb-8 tracking-tighter">
+                    {{ t.hero_title_start }} <br/>
+                    <span class="text-indigo-600">{{ t.hero_highlight }}</span> {{ t.hero_title_end }}
+                </h1>
+                <p class="text-xl text-slate-500 mb-10 leading-relaxed max-w-lg">
+                    {{ t.hero_desc }}
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="/login" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-lg transition-all shadow-xl shadow-indigo-200 flex items-center justify-center gap-2">
+                        {{ t.btn_enter }}
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                    <a href="/demo" class="px-8 py-4 bg-white border border-slate-200 hover:border-indigo-300 text-slate-600 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-2">
+                        {{ t.btn_demo }}
+                    </a>
+                </div>
             </div>
-
-            <!-- Features Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left fade-in-up delay-400">
-                
-                <a href="/analytics" class="glass p-8 rounded-3xl hover-lift group h-full">
-                    <div class="w-12 h-12 bg-gradient-to-br from-sky-500/20 to-sky-500/5 border border-sky-500/20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110">
-                        <i data-lucide="bar-chart-3" class="text-sky-400 w-6 h-6"></i>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3 text-white tracking-wide">{{ t.get('feat1_title', 'Cash Flow Overview') }}</h3>
-                    <p class="text-slate-400 leading-relaxed">{{ t.get('feat1_desc', 'Track your revenue, expenses, and net profit in one simple view.') }}</p>
-                </a>
-
-                <a href="/trends-page" class="glass p-8 rounded-3xl hover-lift group h-full">
-                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 border border-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110">
-                        <i data-lucide="trending-up" class="text-indigo-400 w-6 h-6"></i>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3 text-white tracking-wide">{{ t.get('feat2_title', 'Monthly Growth Tracking') }}</h3>
-                    <p class="text-slate-400 leading-relaxed">{{ t.get('feat2_desc', 'Monitor month-over-month changes in revenue and expenses.') }}</p>
-                </a>
-
-                <a href="/health-page" class="glass p-8 rounded-3xl hover-lift group h-full">
-                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110">
-                        <i data-lucide="shield-check" class="text-emerald-400 w-6 h-6"></i>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3 text-white tracking-wide">{{ t.get('feat3_title', 'Business Health Score') }}</h3>
-                    <p class="text-slate-400 leading-relaxed">{{ t.get('feat3_desc', 'Get a simple health rating based on profit margin, cash flow stability, and growth trends.') }}</p>
-                </a>
-
-                <a href="/alerts-page" class="glass p-8 rounded-3xl hover-lift group h-full">
-                    <div class="w-12 h-12 bg-gradient-to-br from-rose-500/20 to-rose-500/5 border border-rose-500/20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110">
-                         <i data-lucide="alert-triangle" class="text-rose-400 w-6 h-6"></i>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3 text-white tracking-wide">{{ t.get('feat4_title', 'Early Risk Alerts') }}</h3>
-                    <p class="text-slate-400 leading-relaxed">{{ t.get('feat4_desc', 'Get early warnings when expenses spike, profit margins decline, or inventory buildup begins.') }}</p>
-                </a>
-
+            
+            <div class="relative">
+                <div class="absolute -top-20 -right-20 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+                <div class="bg-white rounded-3xl p-4 shadow-2xl border border-slate-100 rotate-2 hover:rotate-0 transition-transform duration-700">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1000" alt="Dashboard Preview" class="rounded-2xl shadow-inner"/>
+                </div>
             </div>
         </div>
-    </main>
+    </header>
+
+    <!-- Features Section -->
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6 text-center mb-16">
+            <h2 class="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">Everything you need to scale</h2>
+            <p class="text-slate-500 text-lg max-w-2xl mx-auto">No complex jargon. Just simple, beautiful data that helps you make better decisions.</p>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-indigo-200 transition-colors group">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                    <i data-lucide="bar-chart-2" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">{{ t.feat1_title }}</h3>
+                <p class="text-slate-500 leading-relaxed">{{ t.feat1_desc }}</p>
+            </div>
+
+            <div class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-indigo-200 transition-colors group">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-rose-600 shadow-sm mb-8 group-hover:bg-rose-600 group-hover:text-white transition-all">
+                    <i data-lucide="shield-alert" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">{{ t.feat2_title }}</h3>
+                <p class="text-slate-500 leading-relaxed">{{ t.feat2_desc }}</p>
+            </div>
+
+            <div class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-indigo-200 transition-colors group">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm mb-8 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    <i data-lucide="zap" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">{{ t.feat3_title }}</h3>
+                <p class="text-slate-500 leading-relaxed">{{ t.feat3_desc }}</p>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="border-t border-white/5 py-8 px-6 text-center text-slate-500 text-sm mt-auto z-10 fade-in-up delay-400">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p>{{ t.get('footer_text', '© 2026 BizHealth Analytics. Built with Flask, SQLite & Chart.js') }}</p>
-            <div class="flex space-x-6 font-medium">
-                <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
-                <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
-                <a href="#" class="hover:text-white transition-colors">Contact Support</a>
+    <footer class="bg-slate-900 py-20 text-white">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-10">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-indigo-600 p-2 rounded-lg">
+                        <i data-lucide="activity" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight">BizHealth</span>
+                </div>
+                <p class="text-slate-400 max-w-sm">Empowering small business owners with professional-grade financial intelligence.</p>
             </div>
+            
+            <div class="flex gap-12 text-sm font-medium text-slate-400">
+                <a href="#" class="hover:text-white">Privacy</a>
+                <a href="#" class="hover:text-white">Terms</a>
+                <a href="#" class="hover:text-white">Support</a>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 border-t border-slate-800 mt-20 pt-10 text-center text-slate-500 text-xs">
+            {{ t.footer_text }}
         </div>
     </footer>
 
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
     </script>
 </body>

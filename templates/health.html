@@ -1,214 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Business Health</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        :root {
-            --primary: #2c7be5;
-            --primary-light: #e3effc;
-            --success: #00d97e;
-            --danger: #e63757;
-            --warning: #f6c343;
-            --dark: #12263f;
-            --gray: #95aac9;
-            --bg: #f9fbfd;
-        }
+{% extends "base.html" %}
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--dark);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-        }
+{% block header_title %}Business Health Score{% endblock %}
 
-        .container {
-            max-width: 800px;
-            width: 100%;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            color: var(--dark);
-            margin: 0 0 12px 0;
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        p.subtitle { color: var(--gray); margin: 0; font-size: 16px; }
-
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            border: 1px solid #edf2f9;
-            box-shadow: 0 10px 30px rgba(18, 38, 63, 0.05);
-        }
-
-        /* Health Score Display */
-        .score-container {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid #edf2f9;
-        }
-
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px auto;
-            border: 8px solid;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
-
-        .score-value {
-            font-size: 48px;
-            font-weight: 900;
-            line-height: 1;
-        }
-
-        .score-label {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
-            color: var(--gray);
-        }
-
-        /* Setup Dynamic Colors via Jinja */
-        {% set sc = health.score | int %}
-        {% if sc >= 70 %}
-            .score-circle { border-color: var(--success); color: var(--success); }
-            .status-text { color: var(--success); font-weight: 700; font-size: 20px;}
-        {% elif sc >= 40 %}
-            .score-circle { border-color: var(--warning); color: var(--warning); }
-            .status-text { color: var(--warning); font-weight: 700; font-size: 20px;}
-        {% else %}
-            .score-circle { border-color: var(--danger); color: var(--danger); }
-            .status-text { color: var(--danger); font-weight: 700; font-size: 20px;}
-        {% endif %}
-
-        /* Alerts Section */
-        h2 {
-            font-size: 20px;
-            margin: 0 0 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-item {
-            padding: 16px 20px;
-            background: #fff9eb;
-            border-left: 4px solid var(--warning);
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 15px;
-            font-weight: 500;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .alert-item.empty {
-            background: #eafcf4;
-            border-left-color: var(--success);
-            color: #1a7a4c;
-        }
-
-        .footer-actions {
-            text-align: center;
-            margin-top: 40px;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background-color: white;
-            color: var(--primary);
-            text-decoration: none;
-            border: 2px solid var(--primary-light);
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .back-link:hover {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <header>
-            <h1>Business Health</h1>
-            <p class="subtitle">Automated risk assessment and operational insights</p>
-        </header>
-
-        <div class="card">
-            
-            <div class="score-container">
-                <div class="score-circle">
-                    <span class="score-value">{{ health.score }}</span>
-                    <span class="score-label">Score</span>
-                </div>
-                
-                <div class="status-text">
-                    {% if sc >= 70 %} Excellent Condition
-                    {% elif sc >= 40 %} Needs Attention
-                    {% else %} Critical Risk
-                    {% endif %}
-                </div>
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Score Card -->
+    <div class="glass-card rounded-[2.5rem] p-12 shadow-sm border border-slate-100 mb-12 text-center">
+        <h3 class="text-xl font-bold text-slate-500 mb-8 uppercase tracking-widest">Business Vitality Index</h3>
+        
+        <div class="relative inline-flex items-center justify-center mb-10">
+            <svg class="w-64 h-64 transform -rotate-90">
+                <circle cx="128" cy="128" r="110" stroke="currentColor" stroke-width="12" fill="transparent" class="text-slate-100" />
+                <circle cx="128" cy="128" r="110" stroke="currentColor" stroke-width="12" fill="transparent" 
+                    stroke-dasharray="691" 
+                    stroke-dashoffset="{{ 691 - (691 * health.score / 100) }}" 
+                    class="transition-all duration-1000 ease-out {% if health.score >= 70 %}text-emerald-500{% elif health.score >= 40 %}text-amber-500{% else %}text-rose-500{% endif %}" 
+                />
+            </svg>
+            <div class="absolute flex flex-col items-center">
+                <span class="text-7xl font-black text-slate-900">{{ health.score }}</span>
+                <span class="text-sm font-bold text-slate-400 uppercase tracking-widest">Score</span>
             </div>
+        </div>
 
-            <h2>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--warning);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                Active Alerts & Insights
-            </h2>
-
-            <div class="alerts-list">
-                {% if health.alerts and health.alerts|length > 0 %}
-                    {% for alert in health.alerts %}
-                        <div class="alert-item">
-                            <span>{{ alert }}</span>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="alert-item empty">
-                        ✅ All metrics are looking perfectly healthy! No active alerts.
-                    </div>
+        <div class="max-w-md mx-auto">
+            <h4 class="text-3xl font-black mb-3 {% if health.score >= 70 %}text-emerald-600{% elif health.score >= 40 %}text-amber-600{% else %}text-rose-600{% endif %}">
+                {% if health.score >= 70 %}Excellent Condition
+                {% elif health.score >= 40 %}Needs Attention
+                {% else %}Critical Risk Detected
                 {% endif %}
-            </div>
-
-            <div class="footer-actions">
-                <a href="/dashboard" class="back-link">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                    Back to Dashboard
-                </a>
-            </div>
+            </h4>
+            <p class="text-slate-500 leading-relaxed font-medium">
+                Your vitality index is calculated based on profit margins, cash flow stability, and growth patterns over the last 90 days.
+            </p>
         </div>
     </div>
 
-</body>
-</html>
+    <!-- Breakdown Alerts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass-card p-8 rounded-3xl shadow-sm">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+                    <i data-lucide="shield-check" class="w-6 h-6"></i>
+                </div>
+                <h5 class="text-xl font-bold text-slate-900">Health Insights</h5>
+            </div>
+            <div class="space-y-4">
+                {% if health.alerts %}
+                    {% for alert in health.alerts %}
+                        <div class="flex gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                            <i data-lucide="info" class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5"></i>
+                            <p class="text-sm text-slate-600 font-medium">{{ alert }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="flex gap-4 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5"></i>
+                        <p class="text-sm text-emerald-700 font-bold">Your business metrics are perfectly stable at this time.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="glass-card p-8 rounded-3xl shadow-sm">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-2xl">
+                    <i data-lucide="zap" class="w-6 h-6"></i>
+                </div>
+                <h5 class="text-xl font-bold text-slate-900">Quick Recommendations</h5>
+            </div>
+            <div class="space-y-4">
+                <div class="p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 transition-colors cursor-pointer">
+                    <p class="text-sm font-bold text-slate-900 mb-1">Optimize Inventory</p>
+                    <p class="text-xs text-slate-500">Your current inventory cost is 15% above the industry average.</p>
+                </div>
+                <div class="p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 transition-colors cursor-pointer">
+                    <p class="text-sm font-bold text-slate-900 mb-1">Reduce Marketing Spend</p>
+                    <p class="text-xs text-slate-500">Acquisition cost spiked by 8% last week. Review your active campaigns.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

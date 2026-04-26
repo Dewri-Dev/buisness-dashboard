@@ -1,8 +1,8 @@
 import os
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from utils.auth import User, users
+from utils.auth import User, get_user, create_user
 from reportlab.pdfgen import canvas
 from flask import send_file
 import io
@@ -16,7 +16,7 @@ from utils.risk_logic import generate_risk_alerts  # Your new import!
 from utils.translations import LANGUAGES           # The language dictionary
 
 app = Flask(__name__)
-app.secret_key = "super_secret_business_key" # Required for language memory
+app.secret_key = os.environ.get("SECRET_KEY", "super_secret_business_key") # Required for language memory
 CORS(app)
 
 login_manager = LoginManager()
@@ -36,21 +36,52 @@ def set_lang(lang):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    user_data = get_user(user_id)
+    if user_data:
+        return User(user_id)
+    return None
 
 @app.route("/login", methods=["GET","POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        if username in users and users[username]["password"] == password:
+        user_data = get_user(username)
+        if user_data and user_data["password"] == password:
             user = User(username)
             login_user(user)
-            return redirect("/dashboard")
+            return redirect(url_for('dashboard'))
+        else:
+            flash("Invalid username or password.")
 
     return render_template("login.html")
 
+@app.route("/register", methods=["GET","POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if password != confirm_password:
+            flash("Passwords do not match.")
+        elif get_user(username):
+            flash("Username already exists.")
+        else:
+            if create_user(username, password):
+                flash("Account created! Please login.")
+                return redirect(url_for('login'))
+            else:
+                flash("An error occurred. Please try again.")
+
+    return render_template("register.html")
 @app.route("/dashboard")
 @login_required
 def dashboard():
@@ -60,7 +91,7 @@ def dashboard():
 @login_required
 def logout():
     logout_user()
-    return redirect("/")
+    return redirect(url_for('home'))
 
 @app.context_processor
 def inject_translations():
@@ -76,6 +107,7 @@ def home():
 
 # ADD DATA
 @app.route("/add-data", methods=["POST"])
+@login_required
 def add_data():
     """Adds a new financial record with validation."""
     data = request.get_json()
@@ -89,21 +121,30 @@ def add_data():
         conn = get_connection()
         cursor = conn.cursor()
         
+        # Safer float conversion
+        rev = float(data.get("revenue") or 0)
+        exp = float(data.get("expenses") or 0)
+        inv = float(data.get("inventory_cost") or 0)
+        cat = data.get("category") or "General"
+        
         # Inserts record including the optional 'category' field
         cursor.execute("""
             INSERT INTO business_data 
-            (date, revenue, expenses, inventory_cost, category)
-            VALUES (?, ?, ?, ?, ?)
+            (user_id, date, revenue, expenses, inventory_cost, category)
+            VALUES (?, ?, ?, ?, ?, ?)
         """, (
+            current_user.id,
             data["date"],
-            float(data.get("revenue", 0)),
-            float(data.get("expenses", 0)),
-            float(data.get("inventory_cost", 0)),
-            data.get("category", "General")
+            rev,
+            exp,
+            inv,
+            cat
         ))
         conn.commit()
         return jsonify({"message": "Data recorded successfully", "status": "success"}), 201
         
+    except ValueError:
+        return jsonify({"error": "Invalid numeric values provided"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
@@ -112,30 +153,49 @@ def add_data():
 
 # SUMMARY
 @app.route("/summary", methods=["GET"])
+@login_required
 def summary():
-    """Calculates high-level business metrics and health scores."""
+    """Calculates high-level business metrics, growth, and category distribution."""
     try:
         conn = get_connection()
         cursor = conn.cursor()
         
-        # Fetch aggregates
+        # 1. Total Metrics
         cursor.execute("""
-            SELECT 
-                SUM(revenue), 
-                SUM(expenses), 
-                SUM(inventory_cost) 
-            FROM business_data
-        """)
+            SELECT SUM(revenue), SUM(expenses), SUM(inventory_cost) 
+            FROM business_data WHERE user_id = ?
+        """, (current_user.id,))
         result = cursor.fetchone()
-        
         rev = result[0] or 0
         exp = result[1] or 0
         inv = result[2] or 0
-        
         profit = rev - exp
         margin = (profit / rev * 100) if rev > 0 else 0
         
-        # Logic from calculations utility
+        # 2. Category Distribution
+        cursor.execute("""
+            SELECT category, SUM(revenue), SUM(expenses) 
+            FROM business_data WHERE user_id = ?
+            GROUP BY category
+        """, (current_user.id,))
+        cat_rows = cursor.fetchall()
+        category_distribution = [{"category": r[0], "revenue": r[1], "expenses": r[2]} for r in cat_rows]
+
+        # 3. Growth Calculation (Current Month vs Previous Month)
+        from datetime import datetime, timedelta
+        now = datetime.now()
+        first_day_current = now.replace(day=1).strftime("%Y-%m-%d")
+        first_day_prev = (now.replace(day=1) - timedelta(days=1)).replace(day=1).strftime("%Y-%m-%d")
+        last_day_prev = (now.replace(day=1) - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        cursor.execute("SELECT SUM(revenue) FROM business_data WHERE user_id = ? AND date >= ?", (current_user.id, first_day_current))
+        current_month_rev = cursor.fetchone()[0] or 0
+        
+        cursor.execute("SELECT SUM(revenue) FROM business_data WHERE user_id = ? AND date >= ? AND date <= ?", (current_user.id, first_day_prev, last_day_prev))
+        prev_month_rev = cursor.fetchone()[0] or 0
+        
+        growth = ((current_month_rev - prev_month_rev) / prev_month_rev * 100) if prev_month_rev > 0 else 0
+
         health_score = calculate_health_score(rev, exp, profit)
         alerts = generate_alerts(rev, exp, profit, margin)
 
@@ -145,8 +205,10 @@ def summary():
                 "total_expenses": round(exp, 2),
                 "total_inventory": round(inv, 2),
                 "net_profit": round(profit, 2),
-                "profit_margin": round(margin, 2)
+                "profit_margin": round(margin, 2),
+                "growth": round(growth, 2)
             },
+            "category_distribution": category_distribution,
             "health_score": health_score,
             "alerts": alerts
         })
@@ -156,14 +218,35 @@ def summary():
         if 'conn' in locals():
             conn.close()
 
+@app.route("/forecast", methods=["GET"])
+@login_required
+def forecast():
+    """Predicts next month's revenue using a simple moving average."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT revenue FROM business_data WHERE user_id = ? ORDER BY date DESC LIMIT 3", (current_user.id,))
+        rows = cursor.fetchall()
+        if not rows:
+            return jsonify({"forecast": 0})
+        
+        avg_rev = sum(r[0] for r in rows) / len(rows)
+        return jsonify({"forecast": round(avg_rev, 2)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
 # TRENDS
 @app.route("/trends", methods=["GET"])
+@login_required
 def trends():
     """Returns historical data for charts."""
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT date, revenue, expenses, category FROM business_data ORDER BY date ASC")
+        cursor.execute("SELECT date, revenue, expenses, category FROM business_data WHERE user_id = ? ORDER BY date ASC", (current_user.id,))
         rows = cursor.fetchall()
         
         data = [{"date": r[0], "revenue": r[1], "expenses": r[2], "category": r[3]} for r in rows]
@@ -175,14 +258,15 @@ def trends():
             conn.close()
 
 @app.route("/analytics")
+@login_required
 def analytics_page():
     """Renders the server-side analytics page."""
     try:
         conn = get_connection()
         cursor = conn.cursor()
         
-        # Calculate totals directly from the database
-        cursor.execute("SELECT SUM(revenue), SUM(expenses) FROM business_data")
+        # Calculate totals directly from the database for current user
+        cursor.execute("SELECT SUM(revenue), SUM(expenses) FROM business_data WHERE user_id = ?", (current_user.id,))
         result = cursor.fetchone()
         
         rev = result[0] or 0
@@ -207,18 +291,20 @@ def analytics_page():
             conn.close()
 
 @app.route("/trends-page")
+@login_required
 def trends_page():
     """Renders the standalone trends visualization page."""
     return render_template("trends.html")
 
 @app.route("/health-page")
+@login_required
 def health_page():
     """Renders the server-side health score and alerts page."""
     try:
         conn = get_connection()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT SUM(revenue), SUM(expenses) FROM business_data")
+        cursor.execute("SELECT SUM(revenue), SUM(expenses) FROM business_data WHERE user_id = ?", (current_user.id,))
         result = cursor.fetchone()
         
         rev = result[0] or 0
@@ -251,13 +337,16 @@ def download_report():
 
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT SUM(revenue), SUM(expenses) FROM business_data")
-    revenue, expenses = cursor.fetchone()
-    profit = (revenue or 0) - (expenses or 0)
+    cursor.execute("SELECT SUM(revenue), SUM(expenses) FROM business_data WHERE user_id = ?", (current_user.id,))
+    result = cursor.fetchone()
+    revenue = result[0] or 0
+    expenses = result[1] or 0
+    profit = revenue - expenses
 
-    p.drawString(100, 750, f"Revenue: {revenue}")
-    p.drawString(100, 730, f"Expenses: {expenses}")
-    p.drawString(100, 710, f"Profit: {profit}")
+    p.drawString(100, 750, f"Business Report for User: {current_user.id}")
+    p.drawString(100, 730, f"Revenue: {revenue}")
+    p.drawString(100, 710, f"Expenses: {expenses}")
+    p.drawString(100, 690, f"Profit: {profit}")
 
     p.save()
     buffer.seek(0)
@@ -271,6 +360,7 @@ def demo_page():
 
 # YOUR NEW ALERTS ROUTE
 @app.route("/alerts-page", methods=["GET", "POST"])
+@login_required
 def alerts_page():
     """Handles the advanced risk alerts via form submission."""
     alerts = []
@@ -297,5 +387,9 @@ def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000")
 
 if __name__ == "__main__":
+    # Start browser in a separate thread so it doesn't block the server
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):
+        threading.Timer(1, open_browser).start()
+    
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)

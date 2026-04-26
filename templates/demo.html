@@ -1,206 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Demo | Business Health Dashboard</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-6 min-h-screen flex flex-col">
+{% extends "base.html" %}
 
-    <!-- Demo Banner -->
-    <div class="bg-indigo-600 text-white text-center py-2 px-4 rounded-lg shadow-md mb-6 flex justify-center items-center gap-2 max-w-6xl mx-auto w-full">
-        <i data-lucide="info" class="w-5 h-5 text-indigo-200"></i>
-        <span class="text-sm font-medium">You are viewing an interactive demo with simulated data.</span>
-        <a href="/" class="ml-4 text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition">Exit Demo</a>
+{% block header_title %}Interactive Demo{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="mb-10 text-center">
+        <h3 class="text-4xl font-black text-slate-900 mb-4 tracking-tight">Experience BizHealth</h3>
+        <p class="text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed italic">
+            "This demo uses local state to show you how the interactivity feels. No data is saved to our servers during this session."
+        </p>
     </div>
 
-    <div class="max-w-6xl mx-auto w-full flex-grow">
-        
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-slate-900">Dashboard <span class="text-slate-400 font-medium text-xl ml-2">Sandbox</span></h1>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Interactive Tool -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="glass-card p-8 rounded-[2.5rem] shadow-sm">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h5 class="text-xl font-bold text-slate-900">Sandbox Dashboard</h5>
+                        <p class="text-sm text-slate-400 font-bold uppercase tracking-widest mt-1">Live Simulation</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="w-3 h-3 rounded-full bg-rose-400 animate-pulse"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-400 animate-pulse delay-75"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse delay-150"></div>
+                    </div>
+                </div>
+                
+                <div class="h-[400px]">
+                    <canvas id="demoChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-3xl shadow-sm border-b-4 border-indigo-500">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Simulated Profit</p>
+                    <h4 class="text-3xl font-black text-slate-900" id="demo-profit">₹0</h4>
+                </div>
+                <div class="glass-card p-6 rounded-3xl shadow-sm border-b-4 border-emerald-500">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Efficiency Ratio</p>
+                    <h4 class="text-3xl font-black text-slate-900" id="demo-ratio">0%</h4>
+                </div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Controls -->
+        <div class="glass-card p-8 rounded-[2.5rem] shadow-sm">
+            <h5 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <i data-lucide="sliders" class="w-5 h-5 text-indigo-600"></i>
+                Simulator Controls
+            </h5>
             
-            <!-- Left Column: Simulate Adding Data -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden">
-                <div class="absolute top-0 right-0 bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-bl-lg">SIMULATED</div>
-                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-5 h-5 text-sky-500"></i>
-                    Add Record
-                </h2>
-                
-                <form id="demoForm" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Date</label>
-                        <input type="date" id="dateInput" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none transition">
+            <div class="space-y-8">
+                <div>
+                    <div class="flex justify-between mb-3">
+                        <label class="text-sm font-bold text-slate-600 uppercase tracking-wider">Revenue Growth</label>
+                        <span class="text-indigo-600 font-black" id="rev-val">50%</span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Revenue (₹)</label>
-                        <input type="number" id="revenueInput" value="45000" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none transition">
+                    <input type="range" id="rev-slider" min="0" max="100" value="50" 
+                        class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                </div>
+
+                <div>
+                    <div class="flex justify-between mb-3">
+                        <label class="text-sm font-bold text-slate-600 uppercase tracking-wider">Expense Ratio</label>
+                        <span class="text-rose-600 font-black" id="exp-val">30%</span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Expenses (₹)</label>
-                        <input type="number" id="expensesInput" value="12000" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none transition">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-1">Inventory Cost (₹)</label>
-                        <input type="number" id="inventoryInput" value="8000" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 outline-none transition">
-                    </div>
-                    <button type="submit" id="demoBtn" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-4 rounded-lg transition mt-4 shadow-md shadow-sky-500/20">
-                        Simulate Transaction
+                    <input type="range" id="exp-slider" min="0" max="100" value="30" 
+                        class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-rose-500">
+                </div>
+
+                <div class="pt-6 border-t border-slate-100">
+                    <button onclick="resetDemo()" class="w-full py-4 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold rounded-2xl transition-all border border-slate-200">
+                        Reset Simulation
                     </button>
-                    <p id="statusMessage" class="text-sm text-center mt-2 hidden"></p>
-                </form>
+                </div>
             </div>
 
-            <!-- Right Column: Mock Overview -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-500"></i>
-                        Overview
-                    </h2>
-                    <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                        Score: 88 <i data-lucide="trending-up" class="w-3 h-3"></i>
-                    </span>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4 mb-8">
-                    <div class="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Revenue</p>
-                        <p class="text-2xl font-bold text-slate-800" id="mockRev">₹845,000</p>
-                    </div>
-                    <div class="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Expenses</p>
-                        <p class="text-2xl font-bold text-slate-800" id="mockExp">₹320,000</p>
-                    </div>
-                    <div class="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Net Profit</p>
-                        <p class="text-2xl font-bold text-emerald-600" id="mockProf">₹525,000</p>
-                    </div>
-                    <div class="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Margin</p>
-                        <p class="text-2xl font-bold text-slate-800" id="mockMarg">62.1%</p>
-                    </div>
-                </div>
-
-                <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i> Alerts & Insights
-                </h3>
-                <div class="space-y-2">
-                    <div class="text-sm bg-emerald-50 text-emerald-800 p-3 rounded-lg border border-emerald-100 flex items-start gap-2">
-                        <i data-lucide="check-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
-                        <span>Excellent profit margin! You are operating well above the 20% healthy threshold.</span>
-                    </div>
-                    <div class="text-sm bg-amber-50 text-amber-800 p-3 rounded-lg border border-amber-100 flex items-start gap-2">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
-                        <span>Inventory costs have risen 12% this month. Keep an eye on supply chain expenses.</span>
-                    </div>
-                </div>
+            <div class="mt-10 p-5 bg-indigo-50 rounded-2xl border border-indigo-100">
+                <p class="text-xs font-bold text-indigo-700 uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <i data-lucide="lightbulb" class="w-3 h-3"></i>
+                    Pro Tip
+                </p>
+                <p class="text-xs text-indigo-600 leading-relaxed font-medium">
+                    Try keeping your expense ratio below 40% for maximum business health scoring.
+                </p>
             </div>
         </div>
-
-        <!-- Bottom Row: Trends Chart -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-10">
-            <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                <i data-lucide="line-chart" class="w-5 h-5 text-rose-500"></i>
-                Performance Trends (6 Months)
-            </h2>
-            <div class="w-full h-72">
-                <canvas id="demoChart"></canvas>
-            </div>
-        </div>
-
     </div>
+</div>
 
-    <script>
-        // Initialize Icons
-        lucide.createIcons();
-        document.getElementById('dateInput').valueAsDate = new Date();
+<script>
+let demoChart;
 
-        // Render Mock Chart
+function updateDemo() {
+    const rev = parseInt(document.getElementById('rev-slider').value);
+    const exp = parseInt(document.getElementById('exp-slider').value);
+    
+    document.getElementById('rev-val').innerText = `${rev}%`;
+    document.getElementById('exp-val').innerText = `${exp}%`;
+    
+    const profit = (rev * 1000) - (exp * 800);
+    document.getElementById('demo-profit').innerText = `₹${profit.toLocaleString()}`;
+    
+    const ratio = rev > 0 ? Math.round((profit / (rev * 1000)) * 100) : 0;
+    document.getElementById('demo-ratio').innerText = `${ratio}%`;
+
+    const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+    const dataRev = [rev*500, rev*750, rev*600, rev*1000];
+    const dataExp = [exp*400, exp*300, exp*500, exp*800];
+
+    if (demoChart) {
+        demoChart.data.datasets[0].data = dataRev;
+        demoChart.data.datasets[1].data = dataExp;
+        demoChart.update();
+    } else {
         const ctx = document.getElementById('demoChart').getContext('2d');
-        let demoChart = new Chart(ctx, {
-            type: 'line',
+        demoChart = new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [
-                    {
-                        label: 'Revenue (₹)',
-                        data: [120000, 135000, 125000, 150000, 180000, 210000],
-                        borderColor: '#0ea5e9', // sky-500
-                        backgroundColor: 'rgba(14, 165, 233, 0.15)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#0ea5e9',
-                    },
-                    {
-                        label: 'Expenses (₹)',
-                        data: [45000, 50000, 48000, 55000, 60000, 62000],
-                        borderColor: '#f43f5e', // rose-500
-                        borderDash: [5, 5],
-                        fill: false,
-                        tension: 0.4,
-                        pointBackgroundColor: '#f43f5e',
-                    }
-                ]
+                labels: labels,
+                datasets: [{
+                    label: 'Simulated Revenue',
+                    data: dataRev,
+                    backgroundColor: '#4f46e5',
+                    borderRadius: 12
+                }, {
+                    label: 'Simulated Expenses',
+                    data: dataExp,
+                    backgroundColor: '#f43f5e',
+                    borderRadius: 12
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
+                plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    y: { grid: { display: false }, ticks: { display: false } },
                     x: { grid: { display: false } }
                 }
             }
         });
+    }
+}
 
-        // Simulate Form Submission
-        document.getElementById('demoForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('demoBtn');
-            const statusMsg = document.getElementById('statusMessage');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>';
-            lucide.createIcons();
+function resetDemo() {
+    document.getElementById('rev-slider').value = 50;
+    document.getElementById('exp-slider').value = 30;
+    updateDemo();
+}
 
-            // Fake API delay
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.innerHTML = 'Simulate Transaction';
-                
-                statusMsg.innerText = "✅ Mock transaction saved! (Database not actually modified)";
-                statusMsg.className = "text-sm text-center mt-3 text-emerald-600 font-medium block";
-                
-                // Update mock totals to simulate the UI reacting
-                let rev = 845000 + parseFloat(document.getElementById('revenueInput').value);
-                let exp = 320000 + parseFloat(document.getElementById('expensesInput').value);
-                let prof = rev - exp;
-                let marg = (prof / rev * 100).toFixed(1);
+document.getElementById('rev-slider').oninput = updateDemo;
+document.getElementById('exp-slider').oninput = updateDemo;
 
-                document.getElementById('mockRev').innerText = `₹${rev.toLocaleString()}`;
-                document.getElementById('mockExp').innerText = `₹${exp.toLocaleString()}`;
-                document.getElementById('mockProf').innerText = `₹${prof.toLocaleString()}`;
-                document.getElementById('mockMarg').innerText = `${marg}%`;
-
-                // Add data to chart and update
-                demoChart.data.labels.push('Now');
-                demoChart.data.datasets[0].data.push(rev/4); // Scaled down for chart visuals
-                demoChart.data.datasets[1].data.push(exp/4);
-                demoChart.update();
-
-                setTimeout(() => { statusMsg.classList.add('hidden'); }, 4000);
-            }, 800);
-        });
-    </script>
-</body>
-</html>
+window.onload = () => {
+    lucide.createIcons();
+    updateDemo();
+}
+</script>
+{% endblock %}

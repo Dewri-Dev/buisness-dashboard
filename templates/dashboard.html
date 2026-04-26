@@ -1,298 +1,269 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Business Health Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Chart.js for data visualization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary: #2c7be5;
-            --success: #00d97e;
-            --danger: #e63757;
-            --warning: #f6c343;
-            --dark: #12263f;
-            --gray: #95aac9;
-            --bg: #f9fbfd;
-        }
+{% extends "base.html" %}
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--dark);
-            margin: 0;
-            padding: 20px;
-        }
+{% block header_title %}{{ t.nav_dashboard }}{% endblock %}
 
-        .container {
-            max-width: 1000px;
-            margin: auto;
-        }
+{% block content %}
+<!-- Welcome & Quick Stats -->
+<div class="mb-8">
+    <h3 class="text-2xl font-bold text-slate-900 mb-1">{{ t.welcome_back }}, {{ current_user.id }}!</h3>
+    <p class="text-slate-500">{{ t.dashboard_subtitle }}</p>
+</div>
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .sidebar {
-            background-color: var(--dark);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-        
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .sidebar a:hover {
-            color: var(--primary);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-
-        .card {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid #edf2f9;
-            box-shadow: 0 0.75rem 1.5rem rgba(18, 38, 63, 0.03);
-            margin-bottom: 20px;
-        }
-
-        h2, h3 { margin-top: 0; color: var(--dark); }
-
-        /* Summary Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            padding: 15px;
-            background: #f8fafd;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-label { font-size: 12px; color: var(--gray); text-transform: uppercase; font-weight: bold; }
-        .stat-value { font-size: 18px; font-weight: bold; display: block; margin-top: 5px; }
-
-        /* Forms */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600; }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #d2ddec;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        button:hover { opacity: 0.9; }
-        button:disabled { background: var(--gray); cursor: not-allowed; }
-        
-        /* Alerts */
-        .alert-item {
-            padding: 10px;
-            margin-bottom: 8px;
-            border-left: 4px solid var(--warning);
-            background: #fff9eb;
-            font-size: 14px;
-            list-style: none;
-        }
-        
-        .alert-success {
-            border-left: 4px solid var(--success);
-            background: #eafcf4;
-        }
-
-        #health-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            color: white;
-        }
-
-        canvas { max-width: 100%; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="sidebar">
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/analytics">Analytics</a>
-        <a href="/trends-page">Trends</a>
-        <a href="/health-page">Health</a>
-        <a href="/alerts-page">Alerts</a>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="glass-card p-6 rounded-2xl shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                <i data-lucide="dollar-sign" class="w-6 h-6"></i>
+            </div>
+            <span class="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i>
+                12%
+            </span>
+        </div>
+        <p class="text-sm font-medium text-slate-500 mb-1">{{ t.total_revenue }}</p>
+        <h4 class="text-2xl font-bold text-slate-900" id="res-revenue">₹0</h4>
     </div>
 
-    <header>
-        <h1>Business Health Dashboard</h1>
-    </header>
+    <div class="glass-card p-6 rounded-2xl shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-2 bg-rose-50 text-rose-600 rounded-lg">
+                <i data-lucide="credit-card" class="w-6 h-6"></i>
+            </div>
+            <span class="flex items-center text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-full">
+                <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i>
+                8%
+            </span>
+        </div>
+        <p class="text-sm font-medium text-slate-500 mb-1">{{ t.total_expenses }}</p>
+        <h4 class="text-2xl font-bold text-slate-900" id="res-expenses">₹0</h4>
+    </div>
 
-    <div class="grid">
-        <!-- Input Section -->
-        <div class="card">
-            <h2>Add Record</h2>
-            <div class="form-group">
-                <label>Date</label>
-                <input type="date" id="date">
+    <div class="glass-card p-6 rounded-2xl shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                <i data-lucide="briefcase" class="w-6 h-6"></i>
             </div>
-            <div class="form-group">
-                <label>Revenue (₹)</label>
-                <input type="number" id="revenue" placeholder="Enter revenue" min="0" step="0.01">
+            <span class="flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full" id="profit-badge">
+                {{ t.profitable }}
+            </span>
+        </div>
+        <p class="text-sm font-medium text-slate-500 mb-1">{{ t.net_profit }}</p>
+        <h4 class="text-2xl font-bold text-slate-900" id="res-profit">₹0</h4>
+    </div>
+
+    <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-indigo-600">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                <i data-lucide="activity" class="w-6 h-6"></i>
             </div>
-            <div class="form-group">
-                <label>Expenses (₹)</label>
-                <input type="number" id="expenses" placeholder="Enter expenses" min="0" step="0.01">
+            <div class="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-600 transition-all duration-1000" id="health-progress" style="width: 0%"></div>
             </div>
-            <div class="form-group">
-                <label>Inventory Cost (₹)</label>
-                <input type="number" id="inventory" placeholder="Enter cost" min="0" step="0.01">
+        </div>
+        <p class="text-sm font-medium text-slate-500 mb-1">{{ t.health_score }}</p>
+        <h4 class="text-2xl font-bold text-slate-900" id="health-badge">0/100</h4>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Chart Section -->
+    <div class="lg:col-span-2 space-y-8">
+        <div class="glass-card p-6 rounded-3xl shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h5 class="text-lg font-bold text-slate-900">{{ t.revenue_vs_expenses }}</h5>
+                    <p class="text-sm text-slate-500">{{ t.cash_flow_monthly }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
+                    <button class="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
+                        <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </div>
-            <button id="saveBtn" onclick="addData()">Save Transaction</button>
+            <div class="h-[350px]">
+                <canvas id="trendsChart"></canvas>
+            </div>
         </div>
 
-        <!-- Summary Section -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0;">Overview</h2>
-                <div id="health-badge">Score: --</div>
+        <!-- Recent Transactions -->
+        <div class="glass-card p-6 rounded-3xl shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h5 class="text-lg font-bold text-slate-900">{{ t.recent_transactions }}</h5>
+                <a href="/analytics" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">{{ t.view_all }}</a>
             </div>
-            
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-label">Total Revenue</span>
-                    <span class="stat-value" id="res-revenue">₹0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Total Expenses</span>
-                    <span class="stat-value" id="res-expenses">₹0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Net Profit</span>
-                    <span class="stat-value" id="res-profit">₹0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Margin</span>
-                    <span class="stat-value" id="res-margin">0%</span>
-                </div>
-            </div>
-
-            <h3>Alerts & Insights</h3>
-            <div id="alerts-container">
-                <div class="alert-item">Loading data...</div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-xs text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                            <th class="pb-3 pl-1 font-semibold">{{ t.date }}</th>
+                            <th class="pb-3 font-semibold">{{ t.category }}</th>
+                            <th class="pb-3 font-semibold text-right">{{ t.revenue }}</th>
+                            <th class="pb-3 font-semibold text-right">{{ t.expenses }}</th>
+                            <th class="pb-3 pr-1 font-semibold text-center">{{ t.status }}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-body" class="text-sm divide-y divide-slate-50">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Visual Trends Section -->
-    <div class="card">
-        <h2>Performance Trends</h2>
-        <canvas id="trendsChart" height="100"></canvas>
+    <!-- Right Sidebar Area -->
+    <div class="space-y-8">
+        <!-- Quick Add Record Form -->
+        <div class="glass-card p-6 rounded-3xl shadow-sm border-t-4 border-indigo-600">
+            <h5 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600"></i>
+                {{ t.add_new_record }}
+            </h5>
+            <form id="recordForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{{ t.date }}</label>
+                    <input type="date" id="date" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{{ t.revenue }}</label>
+                        <input type="number" id="revenue" placeholder="0.00" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{{ t.expenses }}</label>
+                        <input type="number" id="expenses" placeholder="0.00" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{{ t.inventory_cost }}</label>
+                    <input type="number" id="inventory" placeholder="0.00" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{{ t.category }}</label>
+                    <select id="category" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        <option value="General">General</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Salary">Salary</option>
+                    </select>
+                </div>
+                <button type="button" onclick="addData()" id="saveBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 mt-2">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    {{ t.save_record }}
+                </button>
+            </form>
+        </div>
+
+        <!-- Insights & Alerts -->
+        <div class="glass-card p-6 rounded-3xl shadow-sm">
+            <h5 class="text-lg font-bold text-slate-900 mb-4">{{ t.risk_insights }}</h5>
+            <div id="alerts-container" class="space-y-4 text-sm">
+                <div class="flex gap-3 text-slate-500 italic animate-pulse">
+                    <i data-lucide="loader" class="w-4 h-4 animate-spin"></i>
+                    {{ t.analyzing_patterns }}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
 let trendsChart;
 
-// Set today's date automatically on load
-document.getElementById('date').valueAsDate = new Date();
-
-// Initialize Chart
+// Initialize Chart with professional styling
 function initChart(labels = [], revData = [], expData = []) {
     const ctx = document.getElementById('trendsChart').getContext('2d');
     if (trendsChart) trendsChart.destroy();
     
+    // Create gradients
+    const revGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    revGradient.addColorStop(0, 'rgba(79, 70, 229, 0.2)');
+    revGradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
     trendsChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [
                 {
-                    label: 'Revenue',
+                    label: '{{ t.revenue }}',
                     data: revData,
-                    borderColor: '#2c7be5',
-                    backgroundColor: 'rgba(44, 123, 229, 0.1)',
+                    borderColor: '#4f46e5',
+                    backgroundColor: revGradient,
+                    borderWidth: 3,
                     fill: true,
-                    tension: 0.3
+                    tension: 0.4,
+                    pointBackgroundColor: '#4f46e5',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 },
                 {
-                    label: 'Expenses',
+                    label: '{{ t.expenses }}',
                     data: expData,
-                    borderColor: '#e63757',
+                    borderColor: '#f43f5e',
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
                     borderDash: [5, 5],
                     fill: false,
-                    tension: 0.3
+                    tension: 0.4,
+                    pointBackgroundColor: '#f43f5e',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }
             ]
         },
         options: {
             responsive: true,
-            plugins: { legend: { position: 'top' } },
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 13 },
+                    displayColors: true,
+                    cornerRadius: 8
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { display: false } },
-                x: { grid: { display: false } }
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9', drawBorder: false },
+                    ticks: { color: '#94a3b8', font: { size: 12 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { size: 12 } }
+                }
             }
         }
     });
 }
 
-// Add Data
 async function addData() {
     const btn = document.getElementById("saveBtn");
-    const originalText = btn.innerText;
-    
     const payload = {
         date: document.getElementById("date").value,
         revenue: parseFloat(document.getElementById("revenue").value) || 0,
         expenses: parseFloat(document.getElementById("expenses").value) || 0,
-        inventory_cost: parseFloat(document.getElementById("inventory").value) || 0
+        inventory_cost: parseFloat(document.getElementById("inventory").value) || 0,
+        category: document.getElementById("category").value
     };
 
-    if (!payload.date) {
-        alert("Date is required");
-        return;
-    }
+    if (!payload.date) return alert("Please select a date.");
 
-    // Disable button to prevent spam clicking
-    btn.innerText = "Saving...";
     btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Saving...';
+    lucide.createIcons();
 
     try {
         const response = await fetch('/add-data', {
@@ -302,82 +273,94 @@ async function addData() {
         });
         
         if (response.ok) {
-            // Update Dashboard immediately
             await refreshDashboard();
-            
-            // Reset form fields (but keep the date intact for convenience)
-            document.getElementById("revenue").value = '';
-            document.getElementById("expenses").value = '';
-            document.getElementById("inventory").value = '';
-            
-            alert("Transaction saved successfully!");
-        } else {
-            const errData = await response.json();
-            alert("Error: " + (errData.error || "Could not save data"));
+            document.getElementById("recordForm").reset();
+            document.getElementById('date').valueAsDate = new Date();
         }
     } catch (e) {
-        console.error("Submission error", e);
-        alert("Network Error: Could not reach the server.");
+        console.error(e);
     } finally {
-        // Re-enable button
-        btn.innerText = originalText;
         btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> {{ t.save_record }}';
+        lucide.createIcons();
     }
 }
 
-// Fetch and Update Dashboard
 async function refreshDashboard() {
     try {
-        // 1. Get Summary (Mapping to the NEW JSON structure)
         const summaryRes = await fetch('/summary');
         const summary = await summaryRes.json();
 
         if (summary.metrics) {
-            document.getElementById("res-revenue").innerText = `₹${summary.metrics.total_revenue.toLocaleString()}`;
-            document.getElementById("res-expenses").innerText = `₹${summary.metrics.total_expenses.toLocaleString()}`;
-            document.getElementById("res-profit").innerText = `₹${summary.metrics.net_profit.toLocaleString()}`;
-            document.getElementById("res-margin").innerText = `${summary.metrics.profit_margin}%`;
+            const m = summary.metrics;
+            document.getElementById("res-revenue").innerText = `₹${m.total_revenue.toLocaleString()}`;
+            document.getElementById("res-expenses").innerText = `₹${m.total_expenses.toLocaleString()}`;
+            document.getElementById("res-profit").innerText = `₹${m.net_profit.toLocaleString()}`;
             
-            // Change profit color to red if negative
-            const profitEl = document.getElementById("res-profit");
-            profitEl.style.color = summary.metrics.net_profit < 0 ? 'var(--danger)' : 'var(--dark)';
-            
-            const badge = document.getElementById("health-badge");
+            const badge = document.getElementById("profit-badge");
+            if (m.net_profit > 0) {
+                badge.className = "flex items-center text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full";
+                badge.innerHTML = '<i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> {{ t.profitable }}';
+            } else {
+                badge.className = "flex items-center text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-full";
+                badge.innerHTML = '<i data-lucide="trending-down" class="w-3 h-3 mr-1"></i> {{ t.loss }}';
+            }
+
             const score = summary.health_score || 0;
-            badge.innerText = `Score: ${score}`;
-            badge.style.backgroundColor = score > 70 ? 'var(--success)' : (score > 40 ? 'var(--warning)' : 'var(--danger)');
+            document.getElementById("health-badge").innerText = `${score}/100`;
+            document.getElementById("health-progress").style.width = `${score}%`;
 
             const alertsBox = document.getElementById("alerts-container");
             if (summary.alerts && summary.alerts.length > 0) {
-                alertsBox.innerHTML = summary.alerts.map(a => `<div class="alert-item">${a}</div>`).join('');
+                alertsBox.innerHTML = summary.alerts.map(a => `
+                    <div class="flex gap-3 p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700">
+                        <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+                        <span>${a}</span>
+                    </div>
+                `).join('');
             } else {
-                // Show a success message if there are no alerts
-                alertsBox.innerHTML = `<div class="alert-item alert-success">✅ All metrics are looking healthy!</div>`;
+                alertsBox.innerHTML = `
+                    <div class="flex gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-700">
+                        <i data-lucide="check-circle" class="w-5 h-5 shrink-0"></i>
+                        <span>{{ t.everything_great }}</span>
+                    </div>
+                `;
             }
         }
 
-        // 2. Get Trends for Chart
         const trendsRes = await fetch('/trends');
         const trends = await trendsRes.json();
-        
-        // Sort by date before charting
         trends.sort((a, b) => new Date(a.date) - new Date(b.date));
         
         const labels = trends.map(t => t.date);
         const revenues = trends.map(t => t.revenue);
         const expenses = trends.map(t => t.expenses);
-        
         initChart(labels, revenues, expenses);
 
+        // Update Recent Transactions Table
+        const tableBody = document.getElementById('transaction-body');
+        tableBody.innerHTML = trends.slice(-5).reverse().map(t => `
+            <tr>
+                <td class="py-4 pl-1 font-medium text-slate-700">${t.date}</td>
+                <td class="py-4">
+                    <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium">${t.category || 'General'}</span>
+                </td>
+                <td class="py-4 text-right font-semibold text-emerald-600">₹${t.revenue.toLocaleString()}</td>
+                <td class="py-4 text-right font-semibold text-rose-600">₹${t.expenses.toLocaleString()}</td>
+                <td class="py-4 text-center">
+                    <div class="w-2 h-2 rounded-full mx-auto ${t.revenue > t.expenses ? 'bg-emerald-500' : 'bg-rose-500'}"></div>
+                </td>
+            </tr>
+        `).join('');
+
+        lucide.createIcons();
+
     } catch (e) {
-        console.error("Refresh error", e);
-        document.getElementById("alerts-container").innerHTML = `<div class="alert-item" style="border-left-color: var(--danger);">Error loading data. Make sure backend is running.</div>`;
+        console.error(e);
     }
 }
 
-// Load on start
+document.getElementById('date').valueAsDate = new Date();
 window.onload = refreshDashboard;
 </script>
-
-</body>
-</html>
+{% endblock %}

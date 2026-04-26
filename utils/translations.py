@@ -26,7 +26,31 @@ LANGUAGES = {
         'feat4_title': 'Early Risk Alerts',
         'feat4_desc': 'Get early warnings when expenses spike, profit margins decline, or inventory buildup begins to impact your cash flow — before it becomes critical.',
         
-        'footer_text': '© 2026 BizHealth Analytics. Built with Flask, SQLite & Chart.js'
+        'footer_text': '© 2026 BizHealth Analytics. Built with Flask, SQLite & Chart.js',
+        
+        'welcome_back': 'Welcome back',
+        'dashboard_subtitle': "Here's what's happening with your business today.",
+        'total_revenue': 'Total Revenue',
+        'total_expenses': 'Total Expenses',
+        'net_profit': 'Net Profit',
+        'health_score': 'Health Score',
+        'revenue_vs_expenses': 'Revenue vs Expenses',
+        'cash_flow_monthly': 'Track your cash flow monthly',
+        'recent_transactions': 'Recent Transactions',
+        'view_all': 'View all',
+        'add_new_record': 'Add New Record',
+        'date': 'Date',
+        'revenue': 'Revenue',
+        'expenses': 'Expenses',
+        'inventory_cost': 'Inventory Cost',
+        'category': 'Category',
+        'save_record': 'Save Record',
+        'risk_insights': 'Risk Insights',
+        'analyzing_patterns': 'Analyzing financial patterns...',
+        'everything_great': 'Everything looks great! No risk alerts detected.',
+        'profitable': 'Profitable',
+        'loss': 'Loss',
+        'status': 'Status'
     },
     'as': {
         'nav_dashboard': 'ডেশ্ববৰ্ড',
@@ -35,13 +59,13 @@ LANGUAGES = {
         'nav_health': 'স্বাস্থ্য',
         'nav_alerts': 'এলাৰ্টসমূহ',
         'nav_login': 'লগ ইন',
+        'nav_register': 'বিনামূলীয়াকৈ আৰম্ভ কৰক',
         
         'hero_title_start': 'আপোনাৰ',
         'hero_highlight': 'ব্যৱসায় সুস্থ নেকি',
         'hero_title_end': 'মাত্ৰ কেইমিনিট মানত জানক',
         'hero_desc': 'আপোনাৰ দৰে সৰু ব্যৱসায়ীসকলে প্ৰতিদিনে উপাৰ্জন আৰু ব্যয়ৰ হিচাপ ৰাখে, কিন্তু ব্যৱসায়টো প্ৰকৃততে বৃদ্ধি পাইছে নে বিপদত আছে সেয়া প্ৰায়ে নাজানে। এই ডেশ্ববৰ্ডে আপোনাৰ তথ্যসমূহক সৰল বিকাশৰ সংকেত, বিপদৰ এলাৰ্ট, আৰু স্পষ্ট স্বাস্থ্য স্ক\'ৰলৈ পৰিৱৰ্তন কৰে, যাতে আপুনি সোনকালেই ব্যৱস্থা গ্ৰহণ কৰিব পাৰে।',
         
-        # Updated Assamese text for the button
         'btn_enter': 'মোৰ ব্যৱসায় বিশ্লেষণ আৰম্ভ কৰক',
         'btn_demo': 'ডেমো চাওক',
         
@@ -54,6 +78,30 @@ LANGUAGES = {
         'feat4_title': 'আগতীয়া বিপদৰ এলাৰ্ট',
         'feat4_desc': 'ব্যয় বৃদ্ধি পালে, লাভৰ হাৰ কমিলে বা ইনভেণ্টৰী জমা হৈ নগদ ধনৰ প্ৰবাহত প্ৰভাৱ পেলালে পৰিস্থিতি বেয়া হোৱাৰ আগতেই আগতীয়া সতৰ্কবাণী পাওক।',
         
-        'footer_text': '© 2026 BizHealth Analytics. ফ্লাস্ক, SQLite আৰু Chart.js ৰ দ্বাৰা নিৰ্মিত'
+        'footer_text': '© 2026 BizHealth Analytics. ফ্লাস্ক, SQLite আৰু Chart.js ৰ দ্বাৰা নিৰ্মিত',
+
+        'welcome_back': 'আদৰণি জনাইছোঁ',
+        'dashboard_subtitle': "আজি আপোনাৰ ব্যৱসায়ত কি ঘটিছে সেয়া ইয়াত আছে।",
+        'total_revenue': 'মুঠ উপাৰ্জন',
+        'total_expenses': 'মুঠ ব্যয়',
+        'net_profit': 'মুঠ লাভ',
+        'health_score': 'স্বাস্থ্যৰ স্ক\'ৰ',
+        'revenue_vs_expenses': 'উপাৰ্জন বনাম ব্যয়',
+        'cash_flow_monthly': 'আপোনাৰ মাহেকীয়া নগদ ধনৰ প্ৰবাহ ট্ৰেক কৰক',
+        'recent_transactions': 'শেহতীয়া লেনদেনসমূহ',
+        'view_all': 'সকলো চাওক',
+        'add_new_record': 'নতুন ৰেকৰ্ড যোগ কৰক',
+        'date': 'তাৰিখ',
+        'revenue': 'উপাৰ্জন',
+        'expenses': 'ব্যয়',
+        'inventory_cost': 'ইনভেণ্টৰী খৰচ',
+        'category': 'শ্ৰেণী',
+        'save_record': 'ৰেকৰ্ড সংৰক্ষণ কৰক',
+        'risk_insights': 'বিপদৰ অন্তৰ্দৃষ্টি',
+        'analyzing_patterns': 'আৰ্থিক আৰ্হি বিশ্লেষণ কৰা হৈছে...',
+        'everything_great': 'সকলো ঠিকেই আছে! কোনো বিপদৰ সংকেত পোৱা হোৱা নাই।',
+        'profitable': 'লাভজনক',
+        'loss': 'লোকচান',
+        'status': 'স্থিতি'
     }
 }

@@ -8,24 +8,16 @@ def get_connection():
     return sqlite3.connect(DB_NAME)
 
 def init_db():
-    """Initializes the database by wiping old data and creating fresh tables."""
+    """Initializes the database and creating fresh tables if they don't exist."""
     
-    # --- NEW: Automatically delete the old database file if it exists ---
-    if os.path.exists(DB_NAME):
-        try:
-            os.remove(DB_NAME)
-            print("Old database wiped. Starting fresh!")
-        except PermissionError:
-            print("Could not delete DB. It might be open in another program.")
-    # --------------------------------------------------------------------
-
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Create the fresh table
+    # Create the business_data table if it doesn't exist
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS business_data (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
         date TEXT,
         revenue REAL,
         expenses REAL,
@@ -34,28 +26,36 @@ def init_db():
     )
     """)
 
+    # Create the users table if it doesn't exist
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        username TEXT PRIMARY KEY,
+        password TEXT
+    )
+    """)
+
     conn.commit()
     conn.close()
 
-def insert_record(date, revenue, expenses, inventory_cost, category="General"):
+def insert_record(user_id, date, revenue, expenses, inventory_cost, category="General"):
     """Inserts a new financial record into the database."""
     conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
-    INSERT INTO business_data (date, revenue, expenses, inventory_cost, category)
-    VALUES (?, ?, ?, ?, ?)
-    """, (date, revenue, expenses, inventory_cost, category))
+    INSERT INTO business_data (user_id, date, revenue, expenses, inventory_cost, category)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """, (user_id, date, revenue, expenses, inventory_cost, category))
 
     conn.commit()
     conn.close()
 
-def get_all_records():
-    """Retrieves all records from the database."""
+def get_all_records(user_id):
+    """Retrieves all records for a specific user from the database."""
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT date, revenue, expenses, inventory_cost, category FROM business_data ORDER BY date ASC")
+    cur.execute("SELECT date, revenue, expenses, inventory_cost, category FROM business_data WHERE user_id = ? ORDER BY date ASC", (user_id,))
     rows = cur.fetchall()
 
     conn.close()
