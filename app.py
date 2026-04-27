@@ -358,6 +358,16 @@ def demo_page():
     """Renders the frontend-only interactive demo."""
     return render_template("demo.html")
 
+@app.route("/privacy")
+def privacy():
+    """Renders the Privacy Policy page."""
+    return render_template("privacy.html")
+
+@app.route("/terms")
+def terms():
+    """Renders the Terms of Service page."""
+    return render_template("terms.html")
+
 # YOUR NEW ALERTS ROUTE
 @app.route("/alerts-page", methods=["GET", "POST"])
 @login_required

@@ -84,29 +84,38 @@
         </div>
         
         <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-indigo-200 transition-colors group">
+            <a href="/analytics" class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-indigo-200 transition-all hover:shadow-xl hover:shadow-indigo-50 group">
                 <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm mb-8 group-hover:bg-indigo-600 group-hover:text-white transition-all">
                     <i data-lucide="bar-chart-2" class="w-7 h-7"></i>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">{{ t.feat1_title }}</h3>
                 <p class="text-slate-500 leading-relaxed">{{ t.feat1_desc }}</p>
-            </div>
+                <div class="mt-6 flex items-center gap-2 text-indigo-600 font-bold text-sm">
+                    Analyze Now <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </a>
 
-            <div class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-indigo-200 transition-colors group">
+            <a href="/trends-page" class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-rose-200 transition-all hover:shadow-xl hover:shadow-rose-50 group">
                 <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-rose-600 shadow-sm mb-8 group-hover:bg-rose-600 group-hover:text-white transition-all">
                     <i data-lucide="shield-alert" class="w-7 h-7"></i>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">{{ t.feat2_title }}</h3>
                 <p class="text-slate-500 leading-relaxed">{{ t.feat2_desc }}</p>
-            </div>
+                <div class="mt-6 flex items-center gap-2 text-rose-600 font-bold text-sm">
+                    View Trends <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </a>
 
-            <div class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-indigo-200 transition-colors group">
+            <a href="/health-page" class="p-10 bg-slate-50 rounded-3xl border border-slate-100 hover:border-emerald-200 transition-all hover:shadow-xl hover:shadow-emerald-50 group">
                 <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm mb-8 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                     <i data-lucide="zap" class="w-7 h-7"></i>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">{{ t.feat3_title }}</h3>
                 <p class="text-slate-500 leading-relaxed">{{ t.feat3_desc }}</p>
-            </div>
+                <div class="mt-6 flex items-center gap-2 text-emerald-600 font-bold text-sm">
+                    Check Health <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </a>
         </div>
     </section>
 
@@ -123,10 +132,19 @@
                 <p class="text-slate-400 max-w-sm">Empowering small business owners with professional-grade financial intelligence.</p>
             </div>
             
-            <div class="flex gap-12 text-sm font-medium text-slate-400">
-                <a href="#" class="hover:text-white">Privacy</a>
-                <a href="#" class="hover:text-white">Terms</a>
-                <a href="#" class="hover:text-white">Support</a>
+            <div class="flex flex-col md:flex-row gap-12 text-sm font-medium">
+                <div class="flex gap-8 text-slate-400">
+                    <a href="/privacy" class="hover:text-white transition-colors">Privacy</a>
+                    <a href="/terms" class="hover:text-white transition-colors">Terms</a>
+                </div>
+                <div class="flex gap-8">
+                    <a href="https://github.com/Dewri-Dev" target="_blank" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                        <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                    </a>
+                    <a href="https://www.linkedin.com/in/nayandewri/" target="_blank" class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                        <i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn
+                    </a>
+                </div>
             </div>
         </div>
         <div class="max-w-7xl mx-auto px-6 border-t border-slate-800 mt-20 pt-10 text-center text-slate-500 text-xs">
