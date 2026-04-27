@@ -8,10 +8,10 @@ LANGUAGES = {
         'nav_alerts': 'Alerts',
         'nav_login': 'Login',
         
-        'hero_title_start': 'Know If Your',
-        'hero_highlight': 'Business Is Healthy',
-        'hero_title_end': 'in Minutes',
-        'hero_desc': 'Small business owners like you track revenue and expenses every day, but often don’t know if their business is truly growing or at risk. This dashboard turns your numbers into simple growth signals, risk alerts, and a clear health score, so you can take action early.',
+        'hero_title_start': 'Decode your',
+        'hero_highlight': 'business',
+        'hero_title_end': 'in seconds',
+        'hero_desc': 'Your data, simplified—track growth, spot risks, and act faster.',
         
         # Updated English text for the button
         'btn_enter': 'Start Analyzing My Business',
